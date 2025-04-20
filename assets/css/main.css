@@ -78,6 +78,11 @@ body {
   font-family: var(--default-font);
 }
 
+body.modal-open {
+  overflow: hidden;
+  touch-action: none;
+}
+
 a {
   color: var(--accent-color);
   text-decoration: none;
@@ -570,6 +575,8 @@ h6 {
   z-index: 10;
   display: none;
   transform: translate(0px, 0px) rotate(0deg);
+  touch-action: none;
+  padding: 10px; /* aumenta a área de toque sem interferir na imagem */
 }
 
 

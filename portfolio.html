@@ -883,6 +883,7 @@
 
     interact('#adjustableGlasses')
       .draggable({
+        inertia: true,
         listeners: {
           move(event) {
             const target = event.target;
@@ -898,24 +899,30 @@
       })
       .resizable({
         edges: { left: true, right: true, bottom: true, top: true },
+        modifiers: [
+          interact.modifiers.restrictSize({
+            min: { width: 80, height: 40 },
+            max: { width: 400, height: 200 }
+          })
+        ],
         listeners: {
           move(event) {
-            const target = event.target;
-            let x = parseFloat(target.getAttribute('data-x')) || 0;
-            let y = parseFloat(target.getAttribute('data-y')) || 0;
-            const angle = parseFloat(target.getAttribute('data-angle')) || 0;
+            let x = parseFloat(event.target.getAttribute('data-x')) || 0;
+            let y = parseFloat(event.target.getAttribute('data-y')) || 0;
+            const angle = parseFloat(event.target.getAttribute('data-angle')) || 0;
 
-            Object.assign(target.style, {
+            Object.assign(event.target.style, {
               width: `${event.rect.width}px`,
               height: `${event.rect.height}px`,
               transform: `translate(${x + event.deltaRect.left}px, ${y + event.deltaRect.top}px) rotate(${angle}deg)`
             });
 
-            target.setAttribute('data-x', x + event.deltaRect.left);
-            target.setAttribute('data-y', y + event.deltaRect.top);
+            event.target.setAttribute('data-x', x + event.deltaRect.left);
+            event.target.setAttribute('data-y', y + event.deltaRect.top);
           }
         }
       })
+
       .gesturable({
         listeners: {
           move(event) {
