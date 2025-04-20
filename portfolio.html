@@ -133,7 +133,10 @@
                       <span class="fw-bold text-success">R$ 199,90</span>
                     </p>
                     <div class="mt-auto d-flex justify-content-between">
-                      <a href="#" class="btn btn-outline-primary btn-sm" onclick="openModal('assets/img/portfolio/oculos1.jpeg')">👓 Provar</a>
+                      <a href="#" class="btn btn-outline-primary btn-sm"
+                        onclick="event.preventDefault(); openModal('assets/img/portfolio/provador2.png')">
+                        👓 Provar
+                      </a>
 
                       <a href="#" class="btn btn-success btn-sm">🛒
                         Adicionar</a>
@@ -170,8 +173,11 @@
                       <span class="fw-bold text-success">R$ 199,90</span>
                     </p>
                     <div class="mt-auto d-flex justify-content-between">
-                      <a href="#" class="btn btn-outline-primary btn-sm">👓
-                        Provar</a>
+                      <a href="#" class="btn btn-outline-primary btn-sm"
+                        onclick="event.preventDefault(); openModal('assets/img/portfolio/provador1.png')">
+                        👓 Provar
+                      </a>
+
                       <a href="#" class="btn btn-success btn-sm">🛒
                         Adicionar</a>
                     </div>
@@ -662,32 +668,34 @@
                 </div>
               </div>
 
+              <!-- Modal do Provador Virtual -->
               <!-- Modal -->
               <div class="modal fade" id="tryOnModal" tabindex="-1"
-                aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                  <div class="modal-content">
+                aria-labelledby="tryOnModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content text-center">
                     <div class="modal-header">
                       <h5 class="modal-title">Provar Óculos</h5>
                       <button type="button" class="btn-close"
                         data-bs-dismiss="modal" aria-label="Fechar"></button>
                     </div>
                     <div class="modal-body">
-                      <!-- Input para upload da foto -->
-                      <input type="file" accept="image/*"
+                      <!-- Upload da foto -->
+                      <input type="file" id="photoInput" accept="image/*"
                         class="form-control mb-3"
                         onchange="loadUserPhoto(event)">
 
-                      <!-- Área da foto e óculos sobreposto -->
-                      <div class="position-relative text-center">
-                        <img id="userPhoto" class="img-fluid mb-3"
-                          alt="Sua Foto">
-                        <img id="adjustableGlasses" src alt="Óculos Sobreposto">
+                      <!-- Container da imagem -->
+                      <div id="photoContainer"
+                        style="position: relative; display: inline-block;">
+                        <!-- Foto do usuário -->
+                        <img id="userPhoto" src alt="Sua Foto"
+                          style="max-width: 100%; display: block;">
+
+                        <!-- Óculos (sobreposição) -->
+                        <img id="adjustableGlasses" src alt="Óculos"
+                          style="position: absolute; top: 50px; left: 50px; width: 150px; display: none; z-index: 10; cursor: move;">
                       </div>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary"
-                        data-bs-dismiss="modal">Fechar</button>
                     </div>
                   </div>
                 </div>
@@ -857,37 +865,32 @@
 
     <!--Script do modal-->
     <!-- Scripts -->
+    <!-- Bibliotecas -->
     <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+      src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
     <script>
     const glassesImage = document.getElementById('adjustableGlasses');
 
-    // Função que abre o modal e define a imagem do óculos
-    function openModal(glassesSrc) {
-      glassesImage.src = glassesSrc;
-      const modal = new bootstrap.Modal(document.getElementById('tryOnModal'));
-      modal.show();
-    }
-
-    // Função para carregar a imagem do usuário
     function loadUserPhoto(event) {
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         document.getElementById('userPhoto').src = e.target.result;
+        document.getElementById('adjustableGlasses').style.display = 'block';
       };
       reader.readAsDataURL(event.target.files[0]);
     }
 
-    // Ativa o comportamento de mover, redimensionar e rotacionar o óculos
+
     interact('#adjustableGlasses')
       .draggable({
         listeners: {
           move(event) {
             const target = event.target;
-            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+            let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+            let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+            const angle = parseFloat(target.getAttribute('data-angle')) || 0;
 
-            target.style.transform = `translate(${x}px, ${y}px)`;
+            target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg)`;
             target.setAttribute('data-x', x);
             target.setAttribute('data-y', y);
           }
@@ -897,41 +900,53 @@
         edges: { left: true, right: true, bottom: true, top: true },
         listeners: {
           move(event) {
-            let { x, y } = event.target.dataset;
-            x = parseFloat(x) || 0;
-            y = parseFloat(y) || 0;
+            const target = event.target;
+            let x = parseFloat(target.getAttribute('data-x')) || 0;
+            let y = parseFloat(target.getAttribute('data-y')) || 0;
+            const angle = parseFloat(target.getAttribute('data-angle')) || 0;
 
-            Object.assign(event.target.style, {
+            Object.assign(target.style, {
               width: `${event.rect.width}px`,
               height: `${event.rect.height}px`,
-              transform: `translate(${x + event.deltaRect.left}px, ${y + event.deltaRect.top}px)`
+              transform: `translate(${x + event.deltaRect.left}px, ${y + event.deltaRect.top}px) rotate(${angle}deg)`
             });
 
-            event.target.dataset.x = x + event.deltaRect.left;
-            event.target.dataset.y = y + event.deltaRect.top;
+            target.setAttribute('data-x', x + event.deltaRect.left);
+            target.setAttribute('data-y', y + event.deltaRect.top);
           }
-        },
-        modifiers: [
-          interact.modifiers.restrictSize({
-            min: { width: 50, height: 30 },
-            max: { width: 500, height: 300 }
-          })
-        ]
+        }
       })
       .gesturable({
         listeners: {
           move(event) {
             const target = event.target;
-            let angle = (parseFloat(target.getAttribute('data-angle')) || 0) + event.da;
+            const currentAngle = parseFloat(target.getAttribute('data-angle')) || 0;
+            const newAngle = currentAngle + event.da;
 
-            // Limita a rotação para não ficar em ângulos extremos
-            angle = Math.max(Math.min(angle, 360), -360);
+            const x = parseFloat(target.getAttribute('data-x')) || 0;
+            const y = parseFloat(target.getAttribute('data-y')) || 0;
 
-            target.style.transform = `translate(${target.getAttribute('data-x')}px, ${target.getAttribute('data-y')}px) rotate(${angle}deg)`;
-            target.setAttribute('data-angle', angle);
+            target.style.transform = `translate(${x}px, ${y}px) rotate(${newAngle}deg)`;
+            target.setAttribute('data-angle', newAngle);
           }
         }
       });
+
+    function openModal(glassesSrc) {
+      const glasses = document.getElementById('adjustableGlasses');
+
+      // Reseta transformações e dados
+      glasses.setAttribute('data-x', 0);
+      glasses.setAttribute('data-y', 0);
+      glasses.setAttribute('data-angle', 0);
+      glasses.style.transform = 'translate(0px, 0px) rotate(0deg)';
+      glasses.style.display = 'none'; // Esconde até o usuário enviar a foto
+      glasses.src = glassesSrc;
+
+      const modal = new bootstrap.Modal(document.getElementById('tryOnModal'));
+      modal.show();
+    }
+
   </script>
 
     <!-- Vendor JS Files -->
@@ -947,6 +962,11 @@
 
     <!-- Main JS File -->
     <script src="assets/js/main.js"></script>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 
   </body>
 
