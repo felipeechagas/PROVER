@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Portfólio de Óculos</title>
+  <link href="assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+  <main class="main container">
+    <h1>Escolha seu óculos</h1>
+
+    <div class="card" onclick="abrirDetalhes({
+      titulo: 'Óculos Aviador Classic',
+      descricaoBreve: 'Estilo retrô com lentes polarizadas',
+      precoAnterior: 'R$ 299,00',
+      precoPromocional: 'R$ 199,00',
+      medidas: '50mm / 20mm / 140mm',
+      detalhes: 'Armação leve, resistente, ideal para rostos ovais e quadrados.',
+      imagens: [
+        'assets/img/portfolio/app-1.jpg',
+        'assets/img/portfolio/product-1.jpg',
+        'assets/img/portfolio/branding-1.jpg',
+        'assets/img/portfolio/books-1.jpg'
+      ]
+    })">
+      <img src="assets/img/portfolio/app-1.jpg" alt="Óculos Aviador">
+      <h4>Óculos Aviador Classic</h4>
+    </div>
+
+    <script>
+      function abrirDetalhes(dados) {
+        localStorage.setItem("oculosSelecionado", JSON.stringify(dados));
+        window.location.href = "portfolio-details.html";
+      }
+    </script>
+  </main>
+
+</body>
+</html>
