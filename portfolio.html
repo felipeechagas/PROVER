@@ -954,6 +954,24 @@
       modal.show();
     }
 
+    document.getElementById('tryOnModal').addEventListener('hidden.bs.modal', () => {
+      // Limpa imagem do usuário
+      document.getElementById('userPhoto').src = '';
+
+      // Esconde óculos
+      const glasses = document.getElementById('adjustableGlasses');
+      glasses.style.display = 'none';
+
+      // Reseta posição, rotação e atributos do óculos
+      glasses.setAttribute('data-x', 0);
+      glasses.setAttribute('data-y', 0);
+      glasses.setAttribute('data-angle', 0);
+      glasses.style.transform = 'translate(0px, 0px) rotate(0deg)';
+
+      // Opcional: limpa input de arquivo
+      document.getElementById('photoInput').value = '';
+    });
+
   </script>
 
     <!-- Vendor JS Files -->
