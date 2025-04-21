@@ -271,6 +271,73 @@ h6 {
   --background-color: #1e4356;
 }
 
+  /* imagem da capa */
+  .page-title {
+    background-image: url('../img/bannerhome.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 400px; /* altura real da capa */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+    color: #fff;
+    text-align: center;
+  }
+  
+  .page-title::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4); /* escurece a imagem para contraste */
+    z-index: 1;
+  }
+  
+  .page-title .container {
+    position: relative;
+    z-index: 2;
+  }
+  
+
+  .page-title h1 {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .page-title p {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+
+  .breadcrumbs {
+    display: inline-block;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 8px 15px;
+    border-radius: 5px;
+  }
+
+  .breadcrumbs ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    gap: 10px;
+    font-size: 14px;
+  }
+
+  .breadcrumbs ol li {
+    color: #fff;
+  }
+
+  .breadcrumbs ol li a {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+
 /*--------------------------------------------------------------
 # Navigation Menu
 --------------------------------------------------------------*/
@@ -507,6 +574,16 @@ h6 {
     display: block;
   }
 }
+
+
+/*--------------------------------------------------------------
+# Benefícios
+--------------------------------------------------------------*/
+.icone-beneficio {
+  width: 40px;
+  height: 40px;
+}
+
 
 /*--------------------------------------------------------------
 # Cards
