@@ -630,7 +630,7 @@ h6 {
 }
 
 /*--------------------------------------------------------------
-# Modal do Card
+# Modal do Card botão PROVAR
 --------------------------------------------------------------*/
 
 #photoContainer {
@@ -655,6 +655,70 @@ h6 {
   touch-action: none;
   padding: 10px; /* aumenta a área de toque sem interferir na imagem */
 }
+
+/*--------------------------------------------------------------
+# Modal do Card botão ADICIONAR
+--------------------------------------------------------------*/
+
+/* Animação de fade + slide do modal */
+.modal.fade .modal-dialog {
+  transform: translateY(-30px);
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+.modal.fade.show .modal-dialog {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Suaviza a exibição dos elementos internos */
+.modal-content {
+  animation: zoomIn 0.5s ease;
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-pop {
+  animation: popUp 0.5s ease forwards;
+}
+
+.animate-fade {
+  animation: fadeInUp 0.6s ease forwards;
+}
+
+@keyframes popUp {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    transform: translateY(15px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
 
 
 /*--------------------------------------------------------------
