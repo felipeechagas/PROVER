@@ -955,6 +955,10 @@
       <div
         class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg">
+          <div class="modal-header border-0">
+            <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          
           <div class="modal-body p-4">
             <div class="row">
               <!-- Lateral das imagens -->
@@ -1024,10 +1028,10 @@
                 <div class="mt-4">
                   <h6 class="fw-bold">ANEXE SUA RECEITA ATUALIZADA</h6>
                   <input type="file" id="inputReceita" class="form-control mb-2" accept="image/jpeg">
-                  <small class="text-muted">Extensões de arquivo compatíveis: jpeg</small>
-                  <button class="btn btn-outline-primary mt-2" onclick="enviarReceitaPorEmail()">📤 Enviar Receita</button>
-                  <div id="respostaReceita" class="mt-2 text-success"></div>
-                </div>                
+                  <small class="text-muted">Essa receita será enviada via WhatsApp.</small>
+                  <button class="btn btn-success mt-2" onclick="enviarReceitaWhatsApp()">📲 Enviar via WhatsApp</button>
+                </div>
+                                
 
                 <!-- Valor Final -->
                 <div class="mt-3">
@@ -1208,40 +1212,28 @@
       });
 
 
-      function enviarReceitaPorEmail() {
-        const input = document.getElementById('inputReceita');
-        const file = input.files[0];
-        const status = document.getElementById('respostaReceita');
+      function enviarReceitaWhatsApp() {
+        const fileInput = document.getElementById('inputReceita');
+        const file = fileInput.files[0];
 
         if (!file) {
-          status.textContent = "Selecione um arquivo.";
-          status.className = "text-danger";
+          alert("Por favor, selecione uma receita para continuar.");
           return;
         }
 
-        status.textContent = "Enviando...";
-        status.className = "text-primary";
+        // Mensagem personalizada para o WhatsApp
+        const mensagem = encodeURIComponent(
+          `Olá! Estou enviando minha receita para o pedido do óculos.\n\n📎 Receita anexada (enviar manualmente).\n✅ Aguardo confirmação.`
+        );
 
-        const formData = new FormData();
-        formData.append("file", file);
+        // Número do WhatsApp no formato internacional (ex: Brasil +55)
+        const telefone = "5581989678077"; // <-- Substitua pelo seu número
 
-        fetch("enviar_receita.php", {
-          method: "POST",
-          body: formData
-        })
-        .then(resp => resp.text())
-        .then(res => {
-          status.textContent = res;
-          status.className = res.includes("sucesso") ? "text-success" : "text-danger";
-        })
-        .catch(() => {
-          status.textContent = "Erro ao enviar receita.";
-          status.className = "text-danger";
-        });
+        // Redireciona para o WhatsApp
+        window.open(`https://wa.me/${telefone}?text=${mensagem}`, "_blank");
       }
 
-
-
+      
       function atualizarPreco() {
         const adicional = parseFloat(document.querySelector('input[name="lente"]:checked').value);
         const total = precoBase + adicional;
