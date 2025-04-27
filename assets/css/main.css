@@ -656,6 +656,14 @@ h6 {
   padding: 10px; /* aumenta a área de toque sem interferir na imagem */
 }
 
+#userPhoto {
+  max-width: 100%;
+  height: auto;
+}
+#adjustableGlasses {
+  pointer-events: none;
+}
+
 /*--------------------------------------------------------------
 # Modal do Card botão ADICIONAR
 --------------------------------------------------------------*/

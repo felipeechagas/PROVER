@@ -73,7 +73,7 @@
 
       <!-- Page Title -->
       <div class="page-title dark-background">
-      
+
       </div><!-- End Page Title -->
 
       <section class="beneficios-loja py-4 bg-white text-dark">
@@ -813,16 +813,16 @@
                         class="form-control mb-3"
                         onchange="loadUserPhoto(event)">
 
+                      <div id="instrucoes"
+                        class="mb-3 fw-bold text-primary"></div>
+
                       <!-- Container da imagem -->
                       <div id="photoContainer"
                         style="position: relative; display: inline-block;">
-                        <!-- Foto do usuário -->
                         <img id="userPhoto" src alt="Sua Foto"
-                          style="max-width: 100%; display: block;">
-
-                        <!-- Óculos (sobreposição) -->
+                          style="max-width: 100%; display: block; cursor: crosshair;">
                         <img id="adjustableGlasses" src alt="Óculos"
-                          style="position: absolute; top: 50px; left: 50px; width: 150px; display: none; z-index: 10; cursor: move;">
+                          style="position: absolute; width: 150px; display: none; z-index: 10;">
                       </div>
                     </div>
                   </div>
@@ -949,9 +949,10 @@
         class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content border-0 shadow-lg">
           <div class="modal-header border-0">
-            <button type="button" class="btn-close ms-auto" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            <button type="button" class="btn-close ms-auto"
+              data-bs-dismiss="modal" aria-label="Fechar"></button>
           </div>
-          
+
           <div class="modal-body p-4">
             <div class="row">
               <!-- Lateral das imagens -->
@@ -1020,11 +1021,14 @@
                 <!-- Receita -->
                 <div class="mt-4">
                   <h6 class="fw-bold">ANEXE SUA RECEITA ATUALIZADA</h6>
-                  <input type="file" id="inputReceita" class="form-control mb-2" accept="image/jpeg">
-                  <small class="text-muted">Essa receita será enviada via WhatsApp.</small>
-                  <button class="btn btn-success mt-2" onclick="enviarReceitaWhatsApp()">📲 Enviar via WhatsApp</button>
+                  <input type="file" id="inputReceita" class="form-control mb-2"
+                    accept="image/jpeg">
+                  <small class="text-muted">Essa receita será enviada via
+                    WhatsApp.</small>
+                  <button class="btn btn-success mt-2"
+                    onclick="enviarReceitaWhatsApp()">📲 Enviar via
+                    WhatsApp</button>
                 </div>
-                                
 
                 <!-- Valor Final -->
                 <div class="mt-3">
@@ -1047,90 +1051,78 @@
     <script>
       const glassesImage = document.getElementById('adjustableGlasses');
 
+      let clickStep = 0;
+      let eye1 = { x: 0, y: 0 };
+      let eye2 = { x: 0, y: 0 };
+
       function loadUserPhoto(event) {
         const reader = new FileReader();
         reader.onload = function (e) {
           document.getElementById('userPhoto').src = e.target.result;
-          document.getElementById('adjustableGlasses').style.display = 'block';
+          document.getElementById('adjustableGlasses').style.display = 'none';
+
+          iniciarMarcacaoOlhos();
         };
         reader.readAsDataURL(event.target.files[0]);
       }
 
-      let currentScale = 1;
-      interact('#adjustableGlasses')
-      .draggable({
-        inertia: true,
-        listeners: {
-          move(event) {
-            const target = event.target;
-            const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
-            const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
-            const angle = parseFloat(target.getAttribute('data-angle')) || 0;
-
-            target.style.transform = `translate(${x}px, ${y}px) scale(${currentScale}) rotate(${angle}deg)`;
-            target.setAttribute('data-x', x);
-            target.setAttribute('data-y', y);
-          }
-        }
-      })  
-
-      .resizable({
-    // Aqui travamos para redimensionar proporcionalmente
-      preserveAspectRatio: true,
-      modifiers: [
-        interact.modifiers.restrictSize({
-          min: { width: 80, height: 40 },
-          max: { width: 400, height: 200 }
-        })
-      ],
-      listeners: {
-        move(event) {
-          const target = event.target;
-
-          let x = parseFloat(target.getAttribute('data-x')) || 0;
-          let y = parseFloat(target.getAttribute('data-y')) || 0;
-          const angle = parseFloat(target.getAttribute('data-angle')) || 0;
-          const scale = (parseFloat(target.getAttribute('data-scale')) || 1) * (event.rect.width / event.rect.height);
-
-          target.style.width = `${event.rect.width}px`;  // mantém o tamanho interno correto
-          target.style.height = `${event.rect.height}px`;
-
-          target.style.transform = `translate(${x + event.deltaRect.left}px, ${y + event.deltaRect.top}px) scale(1) rotate(${angle}deg)`;
-
-          target.setAttribute('data-x', x + event.deltaRect.left);
-          target.setAttribute('data-y', y + event.deltaRect.top);
-        }
+      function iniciarMarcacaoOlhos() {
+        clickStep = 0;
+        document.getElementById('instrucoes').textContent = 'Clique no OLHO ESQUERDO na sua foto!';
       }
-    })
 
-    .gesturable({
-      listeners: {
-        move(event) {
-          const target = event.target;
+      document.getElementById('userPhoto').addEventListener('click', function (event) {
+        const rect = this.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
 
-          // Atualiza a escala proporcionalmente
-          currentScale *= (1 + event.ds);
-
-          const x = parseFloat(target.getAttribute('data-x')) || 0;
-          const y = parseFloat(target.getAttribute('data-y')) || 0;
-          const angle = (parseFloat(target.getAttribute('data-angle')) || 0) + event.da;
-
-          target.style.transform = `translate(${x}px, ${y}px) scale(${currentScale}) rotate(${angle}deg)`;
-          target.setAttribute('data-angle', angle);
+        if (clickStep === 0) {
+          eye1 = { x, y };
+          clickStep++;
+          document.getElementById('instrucoes').textContent = 'Agora clique no OLHO DIREITO!';
+        } else if (clickStep === 1) {
+          eye2 = { x, y };
+          calcularAjusteOculos();
+          document.getElementById('instrucoes').textContent = 'Óculos ajustado! Você pode fechar o provador.';
+          clickStep = 2; // Não deixar clicar mais
         }
+      });
+
+      function calcularAjusteOculos() {
+        const glasses = document.getElementById('adjustableGlasses');
+
+        // Distância entre olhos
+        const distanciaOlhos = Math.sqrt(Math.pow(eye2.x - eye1.x, 2) + Math.pow(eye2.y - eye1.y, 2));
+
+        // Define largura do óculos baseada na distância
+        const larguraOculos = distanciaOlhos * 2.0; // Ajuste se quiser
+        glasses.style.width = `${larguraOculos}px`;
+
+        // Centro entre os olhos
+        const meioX = (eye1.x + eye2.x) / 2;
+        const meioY = (eye1.y + eye2.y) / 2;
+
+        // Inclinação (ângulo)
+        const anguloRadianos = Math.atan2(eye2.y - eye1.y, eye2.x - eye1.x);
+        const anguloGraus = anguloRadianos * (180 / Math.PI); // converte para graus
+
+        // Posição e rotação aplicadas
+        glasses.style.left = `${meioX - (larguraOculos / 2)}px`;
+        glasses.style.top = `${meioY - (larguraOculos / 4)}px`;
+        glasses.style.transform = `rotate(${anguloGraus}deg)`;
+
+        glasses.style.display = 'block';
       }
-    });
 
       function openModal(glassesSrc) {
         const glasses = document.getElementById('adjustableGlasses');
 
-        // Reseta transformações e dados
-        glasses.setAttribute('data-x', 0);
-        glasses.setAttribute('data-y', 0);
-        glasses.setAttribute('data-angle', 0);
-        glasses.style.transform = 'translate(0px, 0px) rotate(0deg)';
-        glasses.style.display = 'none'; // Esconde até o usuário enviar a foto
+        // Resetar óculos
         glasses.src = glassesSrc;
+        glasses.style.display = 'none';
+        glasses.style.width = '150px';
+        glasses.style.left = '50px';
+        glasses.style.top = '50px';
 
         const modal = new bootstrap.Modal(document.getElementById('tryOnModal'));
         modal.show();
@@ -1153,6 +1145,26 @@
         // Opcional: limpa input de arquivo
         document.getElementById('photoInput').value = '';
       });
+
+      function ajustarTamanho(acao) {
+        const glasses = document.getElementById('adjustableGlasses');
+        const x = parseFloat(glasses.getAttribute('data-x')) || 0;
+        const y = parseFloat(glasses.getAttribute('data-y')) || 0;
+        const angle = parseFloat(glasses.getAttribute('data-angle')) || 0;
+
+        if (acao === 'aumentar') {
+          currentScale *= 1.1; // aumenta 10%
+        } else if (acao === 'diminuir') {
+          currentScale *= 0.9; // diminui 10%
+        }
+
+        // Limitar o zoom
+        if (currentScale < 0.2) currentScale = 0.2;
+        if (currentScale > 5) currentScale = 5;
+
+        glasses.style.transform = `translate(${x}px, ${y}px) scale(${currentScale}) rotate(${angle}deg)`;
+      }
+
 
       // Para abrir o modal e preencher com os dados
       function abrirDetalhesDoProduto(event, produto) {
