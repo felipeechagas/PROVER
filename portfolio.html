@@ -1056,7 +1056,7 @@
         reader.readAsDataURL(event.target.files[0]);
       }
 
-
+      let currentScale = 1;
       interact('#adjustableGlasses')
       .draggable({
         inertia: true,
@@ -1066,9 +1066,8 @@
             const x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
             const y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
             const angle = parseFloat(target.getAttribute('data-angle')) || 0;
-            const scale = parseFloat(target.getAttribute('data-scale')) || 1;
 
-            target.style.transform = `translate(${x}px, ${y}px) scale(${scale}) rotate(${angle}deg)`;
+            target.style.transform = `translate(${x}px, ${y}px) scale(${currentScale}) rotate(${angle}deg)`;
             target.setAttribute('data-x', x);
             target.setAttribute('data-y', y);
           }
@@ -1108,15 +1107,16 @@
       listeners: {
         move(event) {
           const target = event.target;
-          const currentAngle = parseFloat(target.getAttribute('data-angle')) || 0;
-          const newAngle = currentAngle + event.da;
+
+          // Atualiza a escala proporcionalmente
+          currentScale *= (1 + event.ds);
 
           const x = parseFloat(target.getAttribute('data-x')) || 0;
           const y = parseFloat(target.getAttribute('data-y')) || 0;
-          const scale = parseFloat(target.getAttribute('data-scale')) || 1;
+          const angle = (parseFloat(target.getAttribute('data-angle')) || 0) + event.da;
 
-          target.style.transform = `translate(${x}px, ${y}px) scale(${scale}) rotate(${newAngle}deg)`;
-          target.setAttribute('data-angle', newAngle);
+          target.style.transform = `translate(${x}px, ${y}px) scale(${currentScale}) rotate(${angle}deg)`;
+          target.setAttribute('data-angle', angle);
         }
       }
     });
