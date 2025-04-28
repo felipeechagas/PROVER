@@ -831,6 +831,54 @@
 
             </div><!-- End Portfolio Container -->
 
+            <!-- controladores ao redor da foto -->
+              <div id="photoContainer"
+                style="position: relative; display: inline-block;">
+
+                <!-- Foto do usuário -->
+                <img id="userPhoto" src alt="Sua Foto"
+                  style="max-width: 100%; display: block;">
+
+                <!-- Óculos sobreposto -->
+                <img id="adjustableGlasses" src alt="Óculos"
+                  style="position: absolute; top: 50px; left: 50px; width: 150px; display: none; z-index: 10;">
+
+                <!-- Botões controladores -->
+                <div
+                  style="position: absolute; top: 50%; left: -50px; transform: translateY(-50%);">
+                  <button onclick="moverOculos('esquerda')"
+                    class="btn btn-primary btn-sm">⬅️</button>
+                </div>
+
+                <div
+                  style="position: absolute; top: 50%; right: -50px; transform: translateY(-50%);">
+                  <button onclick="moverOculos('direita')"
+                    class="btn btn-primary btn-sm">➡️</button>
+                </div>
+
+                <div
+                  style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%);">
+                  <button onclick="moverOculos('cima')"
+                    class="btn btn-primary btn-sm">⬆️</button>
+                </div>
+
+                <div
+                  style="position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%);">
+                  <button onclick="moverOculos('baixo')"
+                    class="btn btn-primary btn-sm">⬇️</button>
+                </div>
+
+                <!-- Zoom + e - -->
+                <div
+                  style="position: absolute; bottom: -120px; left: 50%; transform: translateX(-50%);">
+                  <button onclick="ajustarTamanho('aumentar')"
+                    class="btn btn-success btn-sm me-1">➕ Zoom</button>
+                  <button onclick="ajustarTamanho('diminuir')"
+                    class="btn btn-danger btn-sm">➖ Zoom</button>
+                </div>
+
+              </div>
+
           </div>
 
         </div>
@@ -1066,6 +1114,7 @@
         reader.readAsDataURL(event.target.files[0]);
       }
 
+      // Marcação dos olhos
       function iniciarMarcacaoOlhos() {
         clickStep = 0;
         document.getElementById('instrucoes').textContent = 'Clique no OLHO ESQUERDO na sua foto!';
@@ -1088,6 +1137,7 @@
         }
       });
 
+      // Calcula o posicionamento do oculos no rosto
       function calcularAjusteOculos() {
         const glasses = document.getElementById('adjustableGlasses');
 
@@ -1114,6 +1164,57 @@
         glasses.style.display = 'block';
       }
 
+      interact('#adjustableGlasses')
+        .draggable({
+          inertia: true,
+          listeners: {
+            move(event) {
+              const target = event.target;
+              
+              // Atualiza a posição atual
+              let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+              let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
+
+              // Aplica a nova posição mantendo rotação e escala
+              const angle = parseFloat(target.getAttribute('data-angle')) || 0;
+              const scale = parseFloat(target.getAttribute('data-scale')) || 1;
+
+              target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg) scale(${scale})`;
+
+              target.setAttribute('data-x', x);
+              target.setAttribute('data-y', y);
+            }
+          }
+        })
+        .resizable({
+          edges: { left: true, right: true, bottom: true, top: true },
+          preserveAspectRatio: true,
+          listeners: {
+            move(event) {
+              const target = event.target;
+              let x = parseFloat(target.getAttribute('data-x')) || 0;
+              let y = parseFloat(target.getAttribute('data-y')) || 0;
+
+              // Atualiza tamanho
+              target.style.width = `${event.rect.width}px`;
+              target.style.height = `${event.rect.height}px`;
+
+              // Atualiza posição
+              x += event.deltaRect.left;
+              y += event.deltaRect.top;
+
+              const angle = parseFloat(target.getAttribute('data-angle')) || 0;
+              const scale = parseFloat(target.getAttribute('data-scale')) || 1;
+
+              target.style.transform = `translate(${x}px, ${y}px) rotate(${angle}deg) scale(${scale})`;
+
+              target.setAttribute('data-x', x);
+              target.setAttribute('data-y', y);
+            }
+          }
+        });
+
+      // Abre o modal
       function openModal(glassesSrc) {
         const glasses = document.getElementById('adjustableGlasses');
 
@@ -1126,6 +1227,12 @@
 
         const modal = new bootstrap.Modal(document.getElementById('tryOnModal'));
         modal.show();
+
+        glasses.setAttribute('data-x', 0);
+        glasses.setAttribute('data-y', 0);
+        glasses.setAttribute('data-angle', 0);
+        glasses.setAttribute('data-scale', 1);
+
       }
 
       document.getElementById('tryOnModal').addEventListener('hidden.bs.modal', () => {
@@ -1146,6 +1253,7 @@
         document.getElementById('photoInput').value = '';
       });
 
+      // Aumenta o tamanho do oculos
       function ajustarTamanho(acao) {
         const glasses = document.getElementById('adjustableGlasses');
         const x = parseFloat(glasses.getAttribute('data-x')) || 0;
@@ -1221,7 +1329,7 @@
         });
       });
 
-
+      // Mensagem Receita para o WhatsApp
       function enviarReceitaWhatsApp() {
         const fileInput = document.getElementById('inputReceita');
         const file = fileInput.files[0];
@@ -1243,7 +1351,7 @@
         window.open(`https://wa.me/${telefone}?text=${mensagem}`, "_blank");
       }
 
-      
+      // Atualiza preço
       function atualizarPreco() {
         const adicional = parseFloat(document.querySelector('input[name="lente"]:checked').value);
         const total = precoBase + adicional;
